@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>AR Red Box Navigation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+    <!-- A-Frame & AR.js with Location-based AR -->
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ar.js@3.4.2/aframe/build/aframe-ar.min.js"></script>
+
+    <style>
+      body, html {
+        margin: 0;
+        overflow: hidden;
+        height: 100%;
+        background: #000;
+      }
+
+      #controls {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 999;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 10px;
+        color: white;
+        font-family: sans-serif;
+        border-radius: 10px;
+      }
+
+      input {
+        width: 100%;
+        margin: 5px 0;
+        padding: 8px;
+      }
+
+      button {
+        width: 100%;
+        padding: 10px;
+        font-weight: bold;
+        background-color: red;
+        color: white;
+        border: none;
+        border-radius: 5px;
+      }
+
+    </style>
+  </head>
+
+  <body>
+    <!-- Controls -->
+    <div id="controls">
+      <label>Target Latitude:</label>
+      <input type="number" id="lat" step="any" value="7.653511" />
+      <label>Target Longitude:</label>
+      <input type="number" id="lon" step="any" value="80.341705" />
+      <button onclick="setTarget()">Place Red Box</button>
+    </div>
+
+    <!-- AR Scene -->
+    <a-scene
+      vr-mode-ui="enabled: false"
+      embedded
+      arjs="sourceType: webcam; gpsMinAccuracy: 100; debugUIEnabled: false;"
+      renderer="logarithmicDepthBuffer: true;"
+    >
+      <a-camera gps-camera rotation-reader></a-camera>
+    </a-scene>
+
+    <script>
+      function setTarget() {
+        const lat = parseFloat(document.getElementById("lat").value);
+        const lon = parseFloat(document.getElementById("lon").value);
+
+        // Remove existing red box if any
+        const existing = document.querySelector('#target-box');
+        if (existing) existing.remove();
+
+        const box = document.createElement('a-box');
+        box.setAttribute('id', 'target-box');
+        box.setAttribute('color', 'red');
+        box.setAttribute('depth', '4');
+        box.setAttribute('height', '4');
+        box.setAttribute('width', '4');
+        box.setAttribute('position', '0 2 0');
+        box.setAttribute('gps-entity-place', `latitude: ${lat}; longitude: ${lon};`);
+        box.setAttribute('animation', 'property: rotation; to: 0 360 0; loop: true; dur: 4000');
+
+        document.querySelector('a-scene').appendChild(box);
+      }
+    </script>
+  </body>
+</html>
